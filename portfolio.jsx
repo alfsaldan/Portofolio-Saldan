@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import profileImg1 from "./Asset/Img/Profil2.JPEG";
-import profileImg2 from "./Asset/Img/profil.png";
+import profileImg1 from "./Asset/Img/Profil2.png";
+import profileImg2 from "./Asset/Img/Profil2.JPEG";
 import cvFile from "./Asset/CV/Cv Alfi Fikri Putra Saldan.pdf";
 
 const SunIcon = () => (
@@ -81,9 +81,13 @@ const ProfileCard = ({ isMobile, profileImage, t }) => {
   const [light, setLight] = useState({ x: 75, y: 25 });
   const [isHovered, setIsHovered] = useState(false);
 
-  const cardWidth  = isMobile ? 280 : 380;
+  const cardWidth = isMobile ? 280 : 380;
   const cardHeight = isMobile ? 390 : 530;
-  const barH = isMobile ? 80 : 90;
+
+  /* ── bottom bar sizing ── */
+  const barH = isMobile ? 72 : 80;
+  const barInset = isMobile ? 10 : 12;   /* gap dari sisi kiri/kanan/bawah kartu */
+  const barRadius = 14;
 
   const loop = useCallback(() => {
     const spd = hovering.current ? 0.1 : 0.05;
@@ -120,7 +124,7 @@ const ProfileCard = ({ isMobile, profileImage, t }) => {
     target.current = { rx: 0, ry: 0, lx: 75, ly: 25 };
   };
 
-  const depth   = Math.sqrt(tilt.rx ** 2 + tilt.ry ** 2);
+  const depth = Math.sqrt(tilt.rx ** 2 + tilt.ry ** 2);
   const shadowX = tilt.ry * 2;
   const shadowY = tilt.rx * -2;
 
@@ -176,32 +180,25 @@ const ProfileCard = ({ isMobile, profileImage, t }) => {
           zIndex: 1, pointerEvents: "none",
         }} />
 
-        {/* LAYER 3: Bottom gradient */}
+        {/* LAYER 3: Bottom gradient — diperpanjang agar nutup area bar */}
         <div style={{
-          position: "absolute", bottom: barH - 4, left: 0, right: 0, height: 100,
+          position: "absolute", bottom: 0, left: 0, right: 0,
+          height: barH + barInset + 80,
           background: "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.65) 100%)",
           zIndex: 1, pointerEvents: "none",
         }} />
 
         {/* ─────────────────────────────────────────────────────────
             LAYER 4: SWEEP CAHAYA — seamless via translate
-            ─────────────────────────────────────────────────────────
-            Elemen ini berukuran 4× kartu dan di-center.
-            Strip diagonal tipis digambar di tengah area besar ini.
-            Animasi menggeser elemen secara fisik (translate),
-            bukan background-position, sehingga tidak ada visual
-            "terpotong" saat loop kembali ke titik awal karena
-            posisi awal/akhir sudah berada jauh di luar batas kartu.
-            overflow: hidden pada parent yang memotongnya.
         ───────────────────────────────────────────────────────── */}
         {!isHovered && (
           <div style={{
             position: "absolute",
             top: "50%", left: "50%",
-            width:  cardWidth  * 4,
+            width: cardWidth * 4,
             height: cardHeight * 4,
-            marginTop:  -(cardHeight * 2),
-            marginLeft: -(cardWidth  * 2),
+            marginTop: -(cardHeight * 2),
+            marginLeft: -(cardWidth * 2),
             pointerEvents: "none",
             zIndex: 5,
             background: `linear-gradient(
@@ -219,13 +216,32 @@ const ProfileCard = ({ isMobile, profileImage, t }) => {
           }} />
         )}
 
-        {/* LAYER 5: Cursor light saat hover */}
+        {/* ─────────────────────────────────────────────────────────
+            LAYER 5: Cursor light — Menggunakan mixBlendMode
+            Cahaya berinteraksi dengan piksel gambar di bawahnya
+            agar terlihat seperti pantulan cahaya sungguhan.
+        ───────────────────────────────────────────────────────── */}
         {isHovered && (
-          <div style={{
-            position: "absolute", inset: 0, zIndex: 5, pointerEvents: "none", borderRadius: 20,
-            background: `radial-gradient(ellipse 65% 65% at ${light.x}% ${light.y}%,
-              rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.08) 35%, transparent 65%)`,
-          }} />
+          <>
+            {/* Cahaya utama menyebar (Soft Light) untuk mencerahkan warna asli */}
+            <div style={{
+              position: "absolute", inset: 0, zIndex: 5, pointerEvents: "none",
+              background: `radial-gradient(circle at ${light.x}% ${light.y}%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.1) 45%, transparent 75%)`,
+              mixBlendMode: "soft-light",
+            }} />
+            {/* Titik fokus cahaya (Overlay) untuk menambah kontras highlight */}
+            <div style={{
+              position: "absolute", inset: 0, zIndex: 5, pointerEvents: "none",
+              background: `radial-gradient(circle at ${light.x}% ${light.y}%, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 35%)`,
+              mixBlendMode: "overlay",
+            }} />
+            {/* Glare tambahan (Screen) agar titik tengah selalu terlihat menyala */}
+            <div style={{
+              position: "absolute", inset: 0, zIndex: 5, pointerEvents: "none",
+              background: `radial-gradient(circle at ${light.x}% ${light.y}%, rgba(255,255,255,0.15) 0%, transparent 30%)`,
+              mixBlendMode: "screen",
+            }} />
+          </>
         )}
 
         {/* LAYER 6: Top specular */}
@@ -261,18 +277,26 @@ const ProfileCard = ({ isMobile, profileImage, t }) => {
           </div>
         </div>
 
-        {/* LAYER 8: Bottom bar */}
+        {/* ════════════════════════════════════════════════════════
+            LAYER 8: Bottom bar — FLOATING / INSET
+            bottom/left/right pakai barInset agar ada gap ke tepi kartu
+            borderRadius membuat pojok bar ikut membulat
+        ════════════════════════════════════════════════════════ */}
         <div style={{
-          position: "absolute", bottom: 0, left: 0, right: 0,
+          position: "absolute",
+          bottom: barInset,
+          left: barInset,
+          right: barInset,
           height: barH,
           background: "rgba(10,10,14,0.92)",
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
-          borderTop: "1px solid rgba(255,255,255,0.07)",
+          border: "1px solid rgba(255,255,255,0.09)",
+          borderRadius: barRadius,
           zIndex: 4,
           display: "flex", alignItems: "center",
-          padding: isMobile ? "0 16px" : "0 20px",
-          gap: isMobile ? 12 : 14,
+          padding: isMobile ? "0 14px" : "0 18px",
+          gap: isMobile ? 10 : 12,
         }}>
           {/* Avatar */}
           <div style={{
@@ -306,7 +330,8 @@ const ProfileCard = ({ isMobile, profileImage, t }) => {
           </div>
 
           {/* Contact Me */}
-          <button
+          <a
+            href="#kontak"
             style={{
               background: "rgba(255,255,255,0.07)",
               border: "1px solid rgba(255,255,255,0.16)",
@@ -317,10 +342,11 @@ const ProfileCard = ({ isMobile, profileImage, t }) => {
               padding: isMobile ? "7px 14px" : "8px 18px",
               cursor: "pointer", whiteSpace: "nowrap", letterSpacing: 0.5,
               transition: "background 0.2s, border-color 0.2s", flexShrink: 0,
+              textDecoration: "none",
             }}
             onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.14)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.32)"; }}
             onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.07)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.16)"; }}
-          >{t ? t.contact : "Contact Me"}</button>
+          >{t ? t.contact : "Contact Me"}</a>
         </div>
       </div>
     </div>
@@ -338,9 +364,13 @@ const IDCard = ({ isMobile, profileImage, t }) => {
   const prevMouse = useRef({ x: 0, y: 0 });
   const rafRef = useRef(null);
   const cardEl = useRef(null);
+  const rotRef = useRef(-4);
+  const rotVelRef = useRef(0);
+  const tiltYRef = useRef(0);
+  const tiltYVelRef = useRef(0);
 
   const [cardXY, setCardXY] = useState({ x: 0, y: 0 });
-  const [cardRot, setCardRot] = useState(-4);
+  const [cardTilt, setCardTilt] = useState({ y: 0, z: -4 });
   const [isDrag, setIsDrag] = useState(false);
   const [ropePoints, setRopePoints] = useState({ cp1: { x: 0.5, y: 0.4 }, cp2: { x: 0.5, y: 0.72 } });
 
@@ -348,26 +378,59 @@ const IDCard = ({ isMobile, profileImage, t }) => {
   const H_ROPE = isMobile ? 160 : 200;
   const cardWidth = isMobile ? 210 : 260;
   const cardHeight = isMobile ? 300 : 380;
-  const PEG_X = W / 2, PEG_Y = 18;
+  const photoHeight = Math.round(cardHeight * 0.64);
+  const PEG_X = W / 2, PEG_Y = isMobile ? -16 : -146;
   const CARD_TOP_BASE_Y = H_ROPE + 49;
 
   const loop = useCallback(() => {
     if (!dragRef.current) {
-      const stiff = 0.09, damp = 0.7;
+      // Spring physics (spring + damping)
+      const stiff = 0.04;
+      const damp = 0.92; // Ayunan lebih tahan lama
+
       velRef.current.x = (velRef.current.x + (0 - posRef.current.x) * stiff) * damp;
       velRef.current.y = (velRef.current.y + (0 - posRef.current.y) * stiff) * damp;
       posRef.current.x += velRef.current.x;
       posRef.current.y += velRef.current.y;
-      const px = posRef.current.x, py = posRef.current.y;
-      const rot = -4 + px * 0.04;
-      const pullX = px / W, pullY = py / H_ROPE;
-      setRopePoints({
-        cp1: { x: 0.5 + pullX * 0.32, y: 0.38 + pullY * 0.18 + Math.abs(pullX) * 0.1 },
-        cp2: { x: 0.5 + pullX * 0.58, y: 0.68 + pullY * 0.22 + Math.abs(pullX) * 0.08 },
-      });
-      setCardXY({ x: px, y: py });
-      setCardRot(rot);
+
+      // Ayunan Rotasi Z (Efek Pendulum)
+      const targetRotZ = posRef.current.x * 0.06 + velRef.current.x * 0.15;
+      rotVelRef.current += (targetRotZ - rotRef.current) * 0.1;
+      rotVelRef.current *= 0.92;
+      rotRef.current += rotVelRef.current;
+
+      // Twist 3D (Sumbu Y)
+      const targetTiltY = velRef.current.x * 0.4;
+      tiltYVelRef.current += (targetTiltY - tiltYRef.current) * 0.08;
+      tiltYVelRef.current *= 0.9;
+      tiltYRef.current += tiltYVelRef.current;
+    } else {
+      // Tarikan Rotasi saat sedang di-drag
+      const targetRotZ = posRef.current.x * 0.04;
+      rotVelRef.current += (targetRotZ - rotRef.current) * 0.2;
+      rotVelRef.current *= 0.8;
+      rotRef.current += rotVelRef.current;
+
+      const targetTiltY = velRef.current.x * -0.5;
+      tiltYVelRef.current += (targetTiltY - tiltYRef.current) * 0.2;
+      tiltYVelRef.current *= 0.8;
+      tiltYRef.current += tiltYVelRef.current;
     }
+
+    const px = posRef.current.x, py = posRef.current.y;
+    const pullX = px / W, pullY = py / H_ROPE;
+    const stretch = Math.sqrt(px * px + py * py) / 180;
+
+    // Lengkungan tali menjadi dinamis dengan velositas
+    const bendX = dragRef.current ? 0 : -velRef.current.x * 0.03;
+    const bendY = dragRef.current ? 0 : -velRef.current.y * 0.03;
+
+    setRopePoints({
+      cp1: { x: 0.5 + pullX * 0.38 + bendX, y: 0.34 + pullY * 0.22 + Math.abs(pullX) * 0.13 + stretch * 0.04 + bendY },
+      cp2: { x: 0.5 + pullX * 0.62 + bendX, y: 0.66 + pullY * 0.26 + Math.abs(pullX) * 0.1 + stretch * 0.04 + bendY },
+    });
+    setCardXY({ x: px, y: py });
+    setCardTilt({ y: tiltYRef.current, z: rotRef.current });
     rafRef.current = requestAnimationFrame(loop);
   }, [W, H_ROPE]);
 
@@ -389,20 +452,15 @@ const IDCard = ({ isMobile, profileImage, t }) => {
       const dy = e.clientY - startMouse.current.y;
       posRef.current.x = startPos.current.x + dx;
       posRef.current.y = startPos.current.y + dy;
-      const px = posRef.current.x, py = posRef.current.y;
-      const rot = -4 + px * 0.04;
-      const pullX = px / W, pullY = py / H_ROPE;
-      const stretch = Math.sqrt(px * px + py * py) / 180;
-      setRopePoints({
-        cp1: { x: 0.5 + pullX * 0.38, y: 0.34 + pullY * 0.22 + Math.abs(pullX) * 0.13 + stretch * 0.04 },
-        cp2: { x: 0.5 + pullX * 0.62, y: 0.66 + pullY * 0.26 + Math.abs(pullX) * 0.1 + stretch * 0.04 },
-      });
-      setCardXY({ x: px, y: py }); setCardRot(rot);
+
+      velRef.current.x = e.clientX - prevMouse.current.x;
+      velRef.current.y = e.clientY - prevMouse.current.y;
       prevMouse.current = { x: e.clientX, y: e.clientY };
     };
     const onUp = (e) => {
       if (!dragRef.current) return;
-      velRef.current = { x: (e.clientX - prevMouse.current.x) * 0.45, y: (e.clientY - prevMouse.current.y) * 0.45 };
+      velRef.current.x *= 0.8;
+      velRef.current.y *= 0.8;
       dragRef.current = false; setIsDrag(false);
     };
     window.addEventListener("mousemove", onMove);
@@ -415,7 +473,6 @@ const IDCard = ({ isMobile, profileImage, t }) => {
   const c1x = ropePoints.cp1.x * W, c1y = ropePoints.cp1.y * H_ROPE;
   const c2x = ropePoints.cp2.x * W, c2y = ropePoints.cp2.y * H_ROPE;
   const pathD = `M ${PEG_X} ${PEG_Y} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${clipX} ${clipY}`;
-  const photoHeight = Math.round(cardHeight * 0.56);
 
   const totalHeight = H_ROPE + cardHeight + 60;
 
@@ -438,11 +495,7 @@ const IDCard = ({ isMobile, profileImage, t }) => {
         <path d={pathD} fill="none" stroke="url(#ropeBase2)" strokeWidth={9} strokeLinecap="round" />
         <path d={pathD} fill="none" stroke="rgba(255,255,255,0.13)" strokeWidth={4} strokeLinecap="round" />
         <path d={pathD} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth={2} strokeLinecap="round" strokeDasharray="6 8" />
-        <circle cx={PEG_X} cy={PEG_Y} r={14} fill="#111" stroke="#333" strokeWidth={2} />
-        <circle cx={PEG_X} cy={PEG_Y} r={8} fill="#1a1a1a" stroke="#555" strokeWidth={1.5} />
-        <circle cx={PEG_X} cy={PEG_Y} r={4} fill="#2a2a2a" />
-        <circle cx={PEG_X - 2} cy={PEG_Y - 2} r={1.5} fill="rgba(255,255,255,0.35)" />
-        <g transform={`translate(${clipX},${clipY}) rotate(${cardRot})`}>
+        <g transform={`translate(${clipX},${clipY}) rotate(${cardTilt.z})`}>
           <rect x={-9} y={-22} width={18} height={24} rx={3.5} fill="#2d2d2d" stroke="#555" strokeWidth={1.2} />
           <rect x={-5.5} y={-18} width={11} height={14} rx={2} fill="#111" stroke="#3a3a3a" strokeWidth={0.8} />
           <circle cx={0} cy={-11} r={2.5} fill="#444" stroke="#666" strokeWidth={0.8} />
@@ -466,59 +519,63 @@ const IDCard = ({ isMobile, profileImage, t }) => {
           boxShadow: isDrag
             ? "0 35px 90px rgba(0,0,0,0.9), 0 0 40px rgba(6,182,212,0.25)"
             : "0 20px 60px rgba(0,0,0,0.8)",
-          transform: `translate(calc(-50% + ${cardXY.x}px), ${cardXY.y}px) rotate(${cardRot}deg)`,
-          transformOrigin: "50% 19px",
+          transform: `translate(calc(-50% + ${cardXY.x}px), ${cardXY.y}px) rotateZ(${cardTilt.z}deg) rotateY(${cardTilt.y}deg)`,
+          transformOrigin: "50% -20px",
           transition: isDrag ? "box-shadow 0.2s" : "box-shadow 0.4s",
           cursor: isDrag ? "grabbing" : "grab",
           overflow: "hidden",
+          transformStyle: "preserve-3d",
           zIndex: 10,
           willChange: "transform",
         }}
       >
         {/* Notch */}
         <div style={{
-          position: "absolute", top: -1, left: "50%", transform: "translateX(-50%)",
+          position: "absolute", top: -1, left: "50%", transform: "translateX(-50%) translateZ(1px)",
           width: 34, height: 18,
           background: "#0d1117",
           borderRadius: "0 0 12px 12px",
           zIndex: 15, border: "1px solid rgba(255,255,255,0.07)", borderTop: "none",
         }} />
 
-        {/* Photo */}
-        <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: photoHeight, overflow: "hidden", background: "#111" }}>
+        {/* Background Photo */}
+        <div style={{ position: "absolute", inset: 0, background: "#111" }}>
           {profileImage ? (
             <img src={profileImage} alt="profile" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center top", display: "block" }} />
           ) : (
             <div style={{ width: "100%", height: "100%", background: "linear-gradient(135deg, #1a1a2e, #16213e)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 52, color: "rgba(255,255,255,0.15)" }}>👤</div>
           )}
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 60, background: "linear-gradient(transparent, #0d1117)" }} />
         </div>
 
-        {/* Info */}
+        {/* Specular Shine Overlay */}
         <div style={{
-          position: "absolute", top: photoHeight, left: 0, right: 0, bottom: 0,
-          padding: isMobile ? "10px 14px 14px" : "12px 18px 16px",
-          display: "flex", flexDirection: "column", background: "#0d1117",
+          position: "absolute", inset: 0,
+          background: `linear-gradient(105deg, transparent ${40 + cardTilt.y * 1.5}%, rgba(255,255,255,0.15) ${50 + cardTilt.y * 1.5}%, transparent ${60 + cardTilt.y * 1.5}%)`,
+          zIndex: 10, pointerEvents: "none", transition: "background 0.1s"
+        }} />
+
+        {/* Info Section with Blur */}
+        <div style={{
+          position: "absolute", bottom: 0, left: 0, right: 0,
+          height: cardHeight - photoHeight,
+          padding: isMobile ? "8px 14px 12px" : "10px 18px 14px",
+          display: "flex", flexDirection: "column",
+          background: "rgba(13, 17, 23, 0.7)",
+          backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
+          borderTop: "1px solid rgba(255, 255, 255, 0.1)", zIndex: 2,
         }}>
-          <div style={{ color: "#fff", fontFamily: "'Bebas Neue', cursive", fontSize: isMobile ? 17 : 20, letterSpacing: 0.5, lineHeight: 1.1, marginBottom: 3 }}>
-            Alfi Fikri<br />Putra Saldan
-          </div>
-          <div style={{ color: "#06b6d4", fontSize: isMobile ? 8 : 9, letterSpacing: 2, textTransform: "uppercase", fontFamily: "'Space Mono', monospace", marginBottom: 7 }}>{t ? t.role : "UI/UX · Web Dev"}</div>
-          <div style={{ height: 1, background: "rgba(255,255,255,0.06)", marginBottom: 7 }} />
-          <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: 1 }}>
-            {[["🏫", "Politeknik Caltex Riau"], ["📍", "Pekanbaru, ID"], ["💼", t ? t.freelance : "Open Freelance"]].map(([ic, tx]) => (
-              <div key={ic} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: isMobile ? 8 : 9, color: "rgba(255,255,255,0.5)", fontFamily: "'Space Mono', monospace" }}>
-                <span style={{ fontSize: isMobile ? 9 : 10 }}>{ic}</span><span>{tx}</span>
-              </div>
+          <div style={{ color: "#fff", fontFamily: "'Bebas Neue', cursive", fontSize: isMobile ? 16 : 19, letterSpacing: 0.5, lineHeight: 1.1, marginBottom: 2 }}>Alfi Fikri<br />Putra Saldan</div>
+          <div style={{ color: "#06b6d4", fontSize: isMobile ? 8 : 9, letterSpacing: 1.5, textTransform: "uppercase", fontFamily: "'Space Mono', monospace", marginBottom: 6 }}>{t ? t.role : "UI/UX · Web Dev"}</div>
+          <div style={{ height: 1, background: "rgba(255,255,255,0.06)", marginBottom: 6 }} />
+          <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1, justifyContent: "center" }}>
+            {[
+              [<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></svg>, "Politeknik Caltex Riau"],
+              [<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>, "Pekanbaru, ID"],
+              [<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>, t ? t.freelance : "Open Freelance"]
+            ].map(([ic, tx], i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: isMobile ? 8 : 9, color: "rgba(255,255,255,0.7)", fontFamily: "'Space Mono', monospace" }}><span style={{ display: "flex", alignItems: "center", color: "rgba(255,255,255,0.5)" }}>{ic}</span><span>{tx}</span></div>
             ))}
           </div>
-          {/* Barcode */}
-          <div style={{ marginTop: 8, background: "rgba(255,255,255,0.02)", borderRadius: 3, padding: "4px 6px", display: "flex", gap: 1.5, justifyContent: "center", alignItems: "flex-end" }}>
-            {[3, 5, 2, 8, 4, 7, 3, 6, 2, 5, 8, 3, 7, 4, 6, 2, 5, 3, 4, 6, 2, 5, 7, 3].map((h, i) => (
-              <div key={i} style={{ width: 1.5, height: h * (isMobile ? 1.6 : 2) + 3, background: i % 3 === 0 ? "rgba(255,255,255,0.65)" : "rgba(255,255,255,0.25)", borderRadius: 0.5 }} />
-            ))}
-          </div>
-          <div style={{ fontSize: 6, color: "rgba(255,255,255,0.1)", marginTop: 2, fontFamily: "'Space Mono', monospace", letterSpacing: 2, textAlign: "center" }}>AFPS-2024</div>
         </div>
       </div>
 
@@ -565,7 +622,7 @@ const certificates = Object.keys(certFiles).map((path) => {
   const fileName = path.split('/').pop();
   const baseName = fileName.replace('.pdf', '');
   const title = baseName.replace(/[-_]/g, ' ');
-  
+
   // Cari gambar thumbnail yang namanya persis sama dengan file PDF-nya
   const imgPath = Object.keys(certImages).find(p => p.includes(`${baseName}.png`) || p.includes(`${baseName}.jpg`) || p.includes(`${baseName}.jpeg`));
   return {
@@ -583,7 +640,7 @@ Object.keys(projFiles).forEach((path) => {
   const parts = path.split('/');
   const fileName = parts.pop();
   const projectName = parts.pop();
-  
+
   if (!projectsMap[projectName]) {
     projectsMap[projectName] = {
       title: projectName.replace(/[-_]/g, ' '),
@@ -591,7 +648,7 @@ Object.keys(projFiles).forEach((path) => {
       images: [],
     };
   }
-  
+
   if (fileName.toLowerCase().includes('mockup')) {
     projectsMap[projectName].mockup = projFiles[path];
   } else {
@@ -635,7 +692,7 @@ const socialLinks = [
     url: "https://www.tiktok.com/@ezzygyy",
     icon: (
       <svg width="18" height="18" viewBox="-2 -2 28 28" fill="currentColor" stroke="none">
-        <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 2.25-.71 4.46-2.02 6.13-1.63 2.11-4.22 3.32-6.93 3.35-2.61.03-5.26-.8-7.16-2.58-1.89-1.78-2.96-4.32-2.91-6.92.05-2.61 1.25-5.08 3.2-6.75 1.95-1.67 4.59-2.45 7.15-2.18v4.06c-1.39-.24-2.84-.11-4.08.57-1.24.68-2.19 1.83-2.51 3.19-.32 1.36-.06 2.83.67 3.98.73 1.15 2.01 1.91 3.4 2.06 1.39.15 2.82-.16 3.96-.92 1.14-.76 1.87-1.99 2.03-3.34.09-.76.08-1.53.08-2.3V.02z"/>
+        <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 2.25-.71 4.46-2.02 6.13-1.63 2.11-4.22 3.32-6.93 3.35-2.61.03-5.26-.8-7.16-2.58-1.89-1.78-2.96-4.32-2.91-6.92.05-2.61 1.25-5.08 3.2-6.75 1.95-1.67 4.59-2.45 7.15-2.18v4.06c-1.39-.24-2.84-.11-4.08.57-1.24.68-2.19 1.83-2.51 3.19-.32 1.36-.06 2.83.67 3.98.73 1.15 2.01 1.91 3.4 2.06 1.39.15 2.82-.16 3.96-.92 1.14-.76 1.87-1.99 2.03-3.34.09-.76.08-1.53.08-2.3V.02z" />
       </svg>
     )
   }
@@ -665,7 +722,7 @@ const translations = {
       p2: "Memiliki pengalaman dalam pengembangan project berbasis website seperti CodeIgniter, Laravel, dan ReactJS. Saya terampil dalam analisis masalah, manajemen data, serta komunikasi efektif dalam tim dan klien.",
       stats: [
         ["3+", "Tahun Pengalaman"],
-        ["8+", "Proyek Selesai"],
+        ["20+", "Proyek Selesai"],
         ["2+", "Penghargaan"]
       ],
       btnCv: "Unduh CV ⬇"
@@ -928,17 +985,22 @@ export default function Portfolio() {
   const visibleProjects = showAllProjects ? allProjects : allProjects.slice(0, 4);
 
   const taglinesID = [
-    "UI/UX Designer & Web Developer",
-    "Mengubah Ide Menjadi Realitas Digital",
-    "Merancang Kode & Desain yang Indah",
-    "Membangun Web Masa Depan Hari Ini",
-  ];
-  const taglinesEN = [
-    "UI/UX Designer & Web Developer",
-    "Turning Ideas into Digital Reality",
-    "Crafting Beautiful Code & Design",
-    "Building Tomorrow's Web Today",
-  ];
+  "UI/UX Designer & Web Developer",
+  "Programmer IT Profesional",
+  "Pengembang Website Modern",
+  "Perancang Antarmuka Digital",
+  "Frontend & Backend Developer",
+  "Creative Digital Engineer",
+];
+
+const taglinesEN = [
+  "UI/UX Designer & Web Developer",
+  "Professional IT Programmer",
+  "Modern Website Developer",
+  "Digital Interface Designer",
+  "Frontend & Backend Developer",
+  "Creative Digital Engineer",
+];
   const taglines = lang === "id" ? taglinesID : taglinesEN;
 
   useEffect(() => {
@@ -1125,13 +1187,13 @@ export default function Portfolio() {
                 </a>
               ))}
               <div style={{ width: 1, height: 18, background: "rgba(255,255,255,.12)" }} />
-              <button 
+              <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "transparent", border: "none", cursor: "pointer", outline: "none", padding: 0, color: "#fff" }}
               >
                 {theme === "dark" ? <SunIcon /> : <MoonIcon />}
               </button>
-              <button 
+              <button
                 onClick={() => setLang(lang === "id" ? "en" : "id")}
                 style={{ display: "flex", alignItems: "center", gap: 6, background: "transparent", border: "none", cursor: "pointer", outline: "none", padding: 0 }}
               >
@@ -1148,7 +1210,7 @@ export default function Portfolio() {
           )}
           {isMobile && (
             <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-              <button 
+              <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "transparent", border: "none", cursor: "pointer", outline: "none", padding: 0, color: "#fff" }}
               >
@@ -1197,7 +1259,7 @@ export default function Portfolio() {
                 </a>
               ))}
               <div style={{ height: 1, background: "rgba(255,255,255,.05)", margin: "4px 0" }} />
-              <button 
+              <button
                 onClick={() => { setLang(lang === "id" ? "en" : "id"); setIsMobileMenuOpen(false); }}
                 style={{ display: "flex", alignItems: "center", gap: 12, background: "transparent", border: "none", cursor: "pointer", color: "#fff", padding: 0 }}
               >
@@ -1230,8 +1292,8 @@ export default function Portfolio() {
             <div style={{
               fontSize: isMobile ? 11 : 12, letterSpacing: 3,
               color: "rgba(255,255,255,.3)", marginBottom: 20,
-            textTransform: "uppercase", fontFamily: "'Space Mono',monospace"
-          }}>{t.hero.greeting}</div>
+              textTransform: "uppercase", fontFamily: "'Space Mono',monospace"
+            }}>{t.hero.greeting}</div>
 
             <h1 style={{
               fontFamily: "'DM Sans',sans-serif", fontWeight: 800,
@@ -1242,7 +1304,7 @@ export default function Portfolio() {
             </h1>
 
             <div style={{ marginBottom: 6 }}>
-            <span style={{ fontSize: isMobile ? 14 : 17, color: "rgba(255,255,255,.45)", fontFamily: "'DM Sans',sans-serif", fontWeight: 300 }}>{t.hero.role}</span>
+              <span style={{ fontSize: isMobile ? 14 : 17, color: "rgba(255,255,255,.45)", fontFamily: "'DM Sans',sans-serif", fontWeight: 300 }}>{t.hero.role}</span>
             </div>
             <div style={{ marginBottom: 30 }}>
               <span style={{
@@ -1269,12 +1331,12 @@ export default function Portfolio() {
               maxWidth: 440, marginBottom: 38,
               fontSize: isMobile ? 14 : 15, fontWeight: 300
             }}>
-            {t.hero.desc}
+              {t.hero.desc}
             </p>
 
             <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-            <a href="#proyek" className="btn-primary">{t.hero.btnProject}</a>
-            <a href="#kontak" className="btn-outline">{t.hero.btnContact}</a>
+              <a href="#proyek" className="btn-primary">{t.hero.btnProject}</a>
+              <a href="#kontak" className="btn-outline">{t.hero.btnContact}</a>
             </div>
           </div>
 
@@ -1286,7 +1348,7 @@ export default function Portfolio() {
             animation: "float 6s ease-in-out infinite",
             width: isMobile ? "100%" : "auto",
           }}>
-          <ProfileCard isMobile={isMobile} profileImage={profileImg1} t={t.profileCard} />
+            <ProfileCard isMobile={isMobile} profileImage={profileImg1} t={t.profileCard} />
           </div>
         </section>
 
@@ -1310,7 +1372,7 @@ export default function Portfolio() {
               order: isMobile ? 2 : 1,
               flexShrink: 0,
             }}>
-            <IDCard isMobile={isMobile} profileImage={profileImg2} t={t.idcard} />
+              <IDCard isMobile={isMobile} profileImage={profileImg2} t={t.idcard} />
             </div>
 
             {/* Text */}
@@ -1321,7 +1383,7 @@ export default function Portfolio() {
                   fontSize: isMobile ? 38 : 56, lineHeight: 1.0,
                   color: "#fff", marginBottom: 20, letterSpacing: -1
                 }}>
-                {t.about.title1} <span style={{ color: "#00c896" }}>{t.about.title2}</span>
+                  {t.about.title1} <span style={{ color: "#00c896" }}>{t.about.title2}</span>
                 </h2>
               </div>
               <div className="reveal reveal-delay-1" style={{
@@ -1330,18 +1392,18 @@ export default function Portfolio() {
                 fontStyle: "italic", color: "rgba(255,255,255,.5)",
                 fontSize: isMobile ? 14 : 15, lineHeight: 1.75,
               }}>
-              {t.about.quote}
+                {t.about.quote}
               </div>
               <div className="reveal reveal-delay-2" style={{ color: "rgba(255,255,255,.55)", lineHeight: 1.9, fontSize: isMobile ? 14 : 15, marginBottom: 16, fontWeight: 300 }}>
-              {t.about.p1}
+                {t.about.p1}
               </div>
               <div className="reveal reveal-delay-2" style={{ color: "rgba(255,255,255,.55)", lineHeight: 1.9, fontSize: isMobile ? 14 : 15, marginBottom: 38, fontWeight: 300 }}>
-              {t.about.p2}
+                {t.about.p2}
               </div>
 
               {/* Stats */}
               <div className="reveal reveal-delay-3" style={{ display: "flex", gap: isMobile ? 30 : 52, marginBottom: 40, flexWrap: "wrap" }}>
-              {t.about.stats.map(([n, l]) => (
+                {t.about.stats.map(([n, l]) => (
                   <div key={l}>
                     <div style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: isMobile ? 44 : 64, color: "#00c896", lineHeight: 1 }}>{n}</div>
                     <div style={{ fontSize: isMobile ? 9 : 10, letterSpacing: 2, textTransform: "uppercase", color: "rgba(255,255,255,.3)", marginTop: 4, fontFamily: "'Space Mono',monospace" }}>{l}</div>
@@ -1351,7 +1413,7 @@ export default function Portfolio() {
 
               <div className="reveal reveal-delay-4">
                 <a href={cvFile} download="CV_Alfi_Fikri_Putra_Saldan.pdf" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                {t.about.btnCv}
+                  {t.about.btnCv}
                 </a>
               </div>
             </div>
@@ -1363,45 +1425,45 @@ export default function Portfolio() {
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
             <div className="reveal" style={{ textAlign: "center", marginBottom: isMobile ? 40 : 56 }}>
               <h2 style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: isMobile ? 32 : 50, color: "#fff", letterSpacing: -0.5 }}>
-              {t.experience.title1} <span style={{ color: "#00c896" }}>{t.experience.title2}</span>
+                {t.experience.title1} <span style={{ color: "#00c896" }}>{t.experience.title2}</span>
               </h2>
             </div>
-            
+
             <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 32 : 64 }}>
               {/* Kolom Kiri: Pendidikan & Magang */}
               <div className="reveal reveal-delay-1">
                 <h3 style={{ color: "#fff", fontSize: isMobile ? 20 : 22, marginBottom: 28, display: "flex", alignItems: "center", gap: 10 }}>
                   <svg width={isMobile ? 22 : 24} height={isMobile ? 22 : 24} viewBox="0 0 24 24" fill="none" stroke="#00c896" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" />
                   </svg>
                   {t.experience.eduTitle}
                 </h3>
                 <div className="timeline-container">
                   <div className="timeline-card">
                     <div className="timeline-dot" />
-                  <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>{t.experience.edu1Date}</div>
-                  <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.experience.edu1Title}</div>
+                    <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>{t.experience.edu1Date}</div>
+                    <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.experience.edu1Title}</div>
                     <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>Politeknik Caltex Riau</div>
-                  <div style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.6 }}>{t.experience.edu1Desc}</div>
+                    <div style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.6 }}>{t.experience.edu1Desc}</div>
                   </div>
 
                   <div className="timeline-card">
                     <div className="timeline-dot" />
-                  <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>{t.experience.edu2Date}</div>
-                  <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.experience.edu2Title}</div>
+                    <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>{t.experience.edu2Date}</div>
+                    <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.experience.edu2Title}</div>
                     <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>PT. Bank Riau Kepri Syariah</div>
                     <ul style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.6, paddingLeft: 18, margin: 0 }}>
-                    <li style={{ marginBottom: 4 }}>{t.experience.edu2_1}</li>
-                    <li>{t.experience.edu2_2}</li>
+                      <li style={{ marginBottom: 4 }}>{t.experience.edu2_1}</li>
+                      <li>{t.experience.edu2_2}</li>
                     </ul>
                   </div>
 
                   <div className="timeline-card">
                     <div className="timeline-dot" />
-                  <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>{t.experience.edu3Date}</div>
-                  <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.experience.edu3Title}</div>
+                    <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>{t.experience.edu3Date}</div>
+                    <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.experience.edu3Title}</div>
                     <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>SMAN 1 Tanah Putih Tanjung Melawan</div>
-                  <div style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.6 }}>{t.experience.edu3Desc}</div>
+                    <div style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.6 }}>{t.experience.edu3Desc}</div>
                   </div>
                 </div>
               </div>
@@ -1410,43 +1472,43 @@ export default function Portfolio() {
               <div className="reveal reveal-delay-2">
                 <h3 style={{ color: "#fff", fontSize: isMobile ? 20 : 22, marginBottom: 28, display: "flex", alignItems: "center", gap: 10 }}>
                   <svg width={isMobile ? 22 : 24} height={isMobile ? 22 : 24} viewBox="0 0 24 24" fill="none" stroke="#00c896" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
                   </svg>
                   {t.experience.orgTitle}
                 </h3>
                 <div className="timeline-container">
                   <div className="timeline-card">
                     <div className="timeline-dot" />
-                  <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>{t.experience.org1Date}</div>
-                  <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.experience.org1Title}</div>
-                  <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>{t.experience.org1Desc}</div>
+                    <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>{t.experience.org1Date}</div>
+                    <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.experience.org1Title}</div>
+                    <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>{t.experience.org1Desc}</div>
                     <ul style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.6, paddingLeft: 18, margin: 0 }}>
-                    <li style={{ marginBottom: 4 }}>{t.experience.org1_1}</li>
-                    <li>{t.experience.org1_2}</li>
+                      <li style={{ marginBottom: 4 }}>{t.experience.org1_1}</li>
+                      <li>{t.experience.org1_2}</li>
                     </ul>
                   </div>
 
                   <div className="timeline-card">
                     <div className="timeline-dot" />
-                  <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>{t.experience.org2Date}</div>
-                  <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.experience.org2Title}</div>
-                  <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>{t.experience.org2Desc}</div>
+                    <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>{t.experience.org2Date}</div>
+                    <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.experience.org2Title}</div>
+                    <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>{t.experience.org2Desc}</div>
                     <ul style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.6, paddingLeft: 18, margin: 0 }}>
-                    <li style={{ marginBottom: 4 }}>{t.experience.org2_1}</li>
-                    <li style={{ marginBottom: 4 }}>{t.experience.org2_2}</li>
-                    <li>{t.experience.org2_3}</li>
+                      <li style={{ marginBottom: 4 }}>{t.experience.org2_1}</li>
+                      <li style={{ marginBottom: 4 }}>{t.experience.org2_2}</li>
+                      <li>{t.experience.org2_3}</li>
                     </ul>
                   </div>
 
                   <div className="timeline-card">
                     <div className="timeline-dot" />
-                  <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>{t.experience.org3Date}</div>
-                  <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.experience.org3Title}</div>
-                  <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>{t.experience.org3Desc}</div>
+                    <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>{t.experience.org3Date}</div>
+                    <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.experience.org3Title}</div>
+                    <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>{t.experience.org3Desc}</div>
                     <ul style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.6, paddingLeft: 18, margin: 0 }}>
-                    <li style={{ marginBottom: 4 }}>{t.experience.org3_1}</li>
-                    <li style={{ marginBottom: 4 }}>{t.experience.org3_2}</li>
-                    <li>{t.experience.org3_3}</li>
+                      <li style={{ marginBottom: 4 }}>{t.experience.org3_1}</li>
+                      <li style={{ marginBottom: 4 }}>{t.experience.org3_2}</li>
+                      <li>{t.experience.org3_3}</li>
                     </ul>
                   </div>
                 </div>
@@ -1545,7 +1607,7 @@ export default function Portfolio() {
               )) : (
                 <div style={{ gridColumn: "1 / -1", padding: 40, textAlign: "center", color: "rgba(255,255,255,0.4)", background: "rgba(255,255,255,0.02)", borderRadius: 16, border: "1px dashed rgba(255,255,255,0.1)" }}>
                   <div style={{ fontSize: 40, marginBottom: 16 }}>📁</div>
-                  {t.projects.emptyTitle}<br/>
+                  {t.projects.emptyTitle}<br />
                   <span style={{ fontSize: 13, opacity: 0.6 }}>{t.projects.emptyDesc}</span>
                 </div>
               )}
@@ -1688,7 +1750,7 @@ export default function Portfolio() {
               <p style={{ color: "rgba(255,255,255,0.7)", fontSize: isMobile ? 14 : 16, lineHeight: 1.7, marginBottom: 32, fontWeight: 300 }}>
                 {t.projects.desc1} {selectedProject.title}. {t.projects.desc2}
               </p>
-              
+
               <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
                 {selectedProject.images && selectedProject.images.length > 0 ? (
                   selectedProject.images.map((img, idx) => (
