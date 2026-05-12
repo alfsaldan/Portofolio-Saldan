@@ -50,7 +50,7 @@ const lerp = (a, b, t) => a + (b - a) * t;
    3D TILT PROFILE CARD — fixed seamless light sweep
 ═══════════════════════════════════════════════════════════════════ */
 
-const ProfileCard = ({ isMobile, profileImage }) => {
+const ProfileCard = ({ isMobile, profileImage, t }) => {
   const cardRef = useRef(null);
   const rafRef = useRef(null);
   const target = useRef({ rx: 0, ry: 0, lx: 75, ly: 25 });
@@ -237,7 +237,7 @@ const ProfileCard = ({ isMobile, profileImage }) => {
             textShadow: "0 1px 8px rgba(0,0,0,0.6)",
             marginTop: 4,
           }}>
-            Software Engineer
+            {t ? t.role : "Software Engineer"}
           </div>
         </div>
 
@@ -281,7 +281,7 @@ const ProfileCard = ({ isMobile, profileImage }) => {
                 boxShadow: "0 0 6px #22c55e, 0 0 14px #22c55e66",
                 animation: "glow 2s ease-in-out infinite", flexShrink: 0,
               }} />
-              <span style={{ color: "rgba(255,255,255,0.4)", fontSize: isMobile ? 9 : 10, fontFamily: "'Space Mono', monospace" }}>Online</span>
+              <span style={{ color: "rgba(255,255,255,0.4)", fontSize: isMobile ? 9 : 10, fontFamily: "'Space Mono', monospace" }}>{t ? t.online : "Online"}</span>
             </div>
           </div>
 
@@ -300,7 +300,7 @@ const ProfileCard = ({ isMobile, profileImage }) => {
             }}
             onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.14)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.32)"; }}
             onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.07)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.16)"; }}
-          >Contact Me</button>
+          >{t ? t.contact : "Contact Me"}</button>
         </div>
       </div>
     </div>
@@ -309,7 +309,7 @@ const ProfileCard = ({ isMobile, profileImage }) => {
 /* ═══════════════════════════════════════════════════════════════════
    LANYARD ID CARD
 ═══════════════════════════════════════════════════════════════════ */
-const IDCard = ({ isMobile, profileImage }) => {
+const IDCard = ({ isMobile, profileImage, t }) => {
   const posRef = useRef({ x: 0, y: 0 });
   const velRef = useRef({ x: 0, y: 0 });
   const dragRef = useRef(false);
@@ -483,11 +483,11 @@ const IDCard = ({ isMobile, profileImage }) => {
           <div style={{ color: "#fff", fontFamily: "'Bebas Neue', cursive", fontSize: isMobile ? 17 : 20, letterSpacing: 0.5, lineHeight: 1.1, marginBottom: 3 }}>
             Alfi Fikri<br />Putra Saldan
           </div>
-          <div style={{ color: "#06b6d4", fontSize: isMobile ? 8 : 9, letterSpacing: 2, textTransform: "uppercase", fontFamily: "'Space Mono', monospace", marginBottom: 7 }}>UI/UX · Web Dev</div>
+          <div style={{ color: "#06b6d4", fontSize: isMobile ? 8 : 9, letterSpacing: 2, textTransform: "uppercase", fontFamily: "'Space Mono', monospace", marginBottom: 7 }}>{t ? t.role : "UI/UX · Web Dev"}</div>
           <div style={{ height: 1, background: "rgba(255,255,255,0.06)", marginBottom: 7 }} />
           <div style={{ display: "flex", flexDirection: "column", gap: 3, flex: 1 }}>
-            {[["🏫", "Politeknik Caltex Riau"], ["📍", "Pekanbaru, ID"], ["💼", "Open Freelance"]].map(([ic, tx]) => (
-              <div key={tx} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: isMobile ? 8 : 9, color: "rgba(255,255,255,0.5)", fontFamily: "'Space Mono', monospace" }}>
+            {[["🏫", "Politeknik Caltex Riau"], ["📍", "Pekanbaru, ID"], ["💼", t ? t.freelance : "Open Freelance"]].map(([ic, tx]) => (
+              <div key={ic} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: isMobile ? 8 : 9, color: "rgba(255,255,255,0.5)", fontFamily: "'Space Mono', monospace" }}>
                 <span style={{ fontSize: isMobile ? 9 : 10 }}>{ic}</span><span>{tx}</span>
               </div>
             ))}
@@ -506,7 +506,7 @@ const IDCard = ({ isMobile, profileImage }) => {
         position: "absolute", bottom: 0, left: "50%", transform: "translateX(-50%)",
         fontSize: 9, color: "rgba(255,255,255,0.16)", fontFamily: "'Space Mono', monospace",
         letterSpacing: 2.5, whiteSpace: "nowrap", animation: "fadeHint 3s ease-in-out infinite",
-      }}>drag me ↕</div>
+      }}>{t ? t.drag : "drag me ↕"}</div>
     </div>
   );
 };
@@ -550,7 +550,6 @@ const certificates = Object.keys(certFiles).map((path) => {
   const imgPath = Object.keys(certImages).find(p => p.includes(`${baseName}.png`) || p.includes(`${baseName}.jpg`) || p.includes(`${baseName}.jpeg`));
   return {
     title,
-    desc: `Sertifikat penghargaan dan kompetensi untuk pencapaian pada ${title}.`,
     url: certFiles[path],
     imgUrl: imgPath ? certImages[imgPath] : null,
   };
@@ -570,7 +569,6 @@ Object.keys(projFiles).forEach((path) => {
       title: projectName.replace(/[-_]/g, ' '),
       mockup: null,
       images: [],
-      desc: `Ini adalah detail penjelasan singkat mengenai proyek ${projectName.replace(/[-_]/g, ' ')}. Proyek ini dikembangkan dengan berfokus pada antarmuka modern dan memberikan solusi pengalaman pengguna yang interaktif.`,
     };
   }
   
@@ -583,6 +581,256 @@ Object.keys(projFiles).forEach((path) => {
 
 const allProjects = Object.values(projectsMap).filter(p => p.mockup);
 
+/* ─── KAMUS TERJEMAHAN ───────────────────────────────────────────── */
+const translations = {
+  id: {
+    nav: [
+      { id: "beranda", label: "Beranda" },
+      { id: "tentang", label: "Tentang" },
+      { id: "proyek", label: "Proyek" },
+      { id: "kontak", label: "Kontak" }
+    ],
+    hero: {
+      greeting: "HALO, SAYA",
+      role: "Seorang",
+      desc: "Saya membantu bisnis dan individu mengubah ide menjadi solusi digital yang indah dan berfungsi.",
+      btnProject: "Lihat Proyek ↗",
+      btnContact: "Kontak Saya →"
+    },
+    about: {
+      title1: "Tentang",
+      title2: "Saya",
+      quote: "Perpaduan logika kode dan estetika desain.",
+      p1: "Saya merupakan seorang mahasiswa Teknik Informatika Politeknik Caltex Riau dengan bidang Web Developer (FrontEnd) dan UI/UX Designer.",
+      p2: "Memiliki pengalaman dalam pengembangan project berbasis website seperti CodeIgniter, Laravel, dan ReactJS. Saya terampil dalam analisis masalah, manajemen data, serta komunikasi efektif dalam tim dan klien.",
+      stats: [
+        ["3+", "Tahun Pengalaman"],
+        ["8+", "Proyek Selesai"],
+        ["2+", "Penghargaan"]
+      ],
+      btnCv: "Unduh CV ⬇"
+    },
+    experience: {
+      title1: "Jejak",
+      title2: "Perjalanan",
+      eduTitle: "Pendidikan & Magang",
+      edu1Date: "Ags 2022 - Sekarang",
+      edu1Title: "D4 Teknik Informatika",
+      edu1Desc: "Aktif sebagai anggota ITSA dan mengikuti kegiatan baik tingkat organisasi mahasiswa maupun kampus.",
+      edu2Date: "Sep 2025 - Jul 2026",
+      edu2Title: "Divisi MSDI, IT (Magang)",
+      edu2_1: "Mengembangkan Sistem Key Performance Indicator",
+      edu2_2: "Mengembangkan Sistem Work Load Analysis",
+      edu3Date: "Ags 2019 - Apr 2022",
+      edu3Title: "MIPA",
+      edu3Desc: "Aktif sebagai anggota Pramuka dan mengikuti perlombaan di bidang akademik maupun non-akademik.",
+      orgTitle: "Organisasi & Penghargaan",
+      org1Date: "2022 - Sekarang",
+      org1Title: "Penghargaan & Pencapaian",
+      org1Desc: "Politeknik Caltex Riau & Pemkab",
+      org1_1: "Penerima Beasiswa Pemerintah Kab. Rokan Hilir 2022 - 2026",
+      org1_2: "Meraih Penghargaan Sebagai BEST POSTER – JTI EXPO 2024",
+      org2Date: "Ags 2022 - Sep 2025",
+      org2Title: "Pengurus Organisasi",
+      org2Desc: "Keluarga Mahasiswa PCR-ROHIL & ITSA",
+      org2_1: "Sekretaris Divisi Kominfo (2024-2025)",
+      org2_2: "Anggota Divisi Dokumentasi Event Kelas Desain",
+      org2_3: "Anggota aktif Himpunan Mahasiswa Teknik Informatika (ITSA)",
+      org3Date: "Sep 2022 - 2024",
+      org3Title: "Kepanitiaan Tingkat Kampus",
+      org3Desc: "Kepanitiaan Tingkat Kampus",
+      org3_1: "Ketua Div. Publikasi Event Upgrading Skill Competition",
+      org3_2: "Panitia PCR-GTS 2023 & 2024",
+      org3_3: "Panitia Pembekalan Karir Calon Wisudawan PCR 2023 & 2024"
+    },
+    certs: {
+      title1: "Sertifikat",
+      title2: "& Penghargaan",
+      subtitle: "Beberapa pencapaian dan validasi kompetensi saya.",
+      fallback: "Sertifikat PDF",
+      btnPdf: "Lihat PDF ↗",
+      empty: "Belum ada sertifikat di dalam folder Asset/Sertifikat.",
+      btnLess: "Tampilkan Lebih Sedikit ↑",
+      btnMore: "Lihat Semua Sertifikat ↓",
+      descPrefix: "Sertifikat penghargaan dan kompetensi untuk pencapaian pada"
+    },
+    projects: {
+      title1: "Proyek",
+      title2: "Terpilih",
+      subtitle: "Beberapa karya yang menyoroti keahlian saya.",
+      fallback: "Mockup Project",
+      btnDetail: "Lihat Detail ↗",
+      emptyTitle: "Belum ada Proyek yang ditambahkan.",
+      emptyDesc: "Buat folder di dalam Asset/Project/ dan tambahkan file gambar Mockup.jpg beserta gambar lainnya.",
+      btnLess: "Tampilkan Lebih Sedikit ↑",
+      btnMore: "Lihat Semua Proyek ↓",
+      desc1: "Ini adalah detail penjelasan singkat mengenai proyek",
+      desc2: "Proyek ini dikembangkan dengan berfokus pada antarmuka modern dan memberikan solusi pengalaman pengguna yang interaktif.",
+      modalNoImg: "Belum ada gambar detail untuk proyek ini.",
+      modalAddImg: "Tambahkan gambar lain di dalam folder proyek Anda."
+    },
+    contact: {
+      title1: "Mari",
+      title2: "Berkolaborasi",
+      subtitle: "Punya ide proyek? Saya siap membantu mengubahnya menjadi kenyataan digital.",
+      btnEmail: "Kirim Email ✉",
+      btnWa: "WhatsApp →"
+    },
+    idcard: {
+      role: "UI/UX · Web Dev",
+      freelance: "Open Freelance",
+      drag: "drag me ↕"
+    },
+    profileCard: {
+      role: "Software Engineer",
+      contact: "Kontak Saya",
+      online: "Online"
+    },
+    techCat: {
+      "FRONTEND LIB": "LIB FRONTEND",
+      "CSS FRAMEWORK": "FRAMEWORK CSS",
+      "BACKEND SERVICE": "LAYANAN BACKEND",
+      "WEB FRAMEWORK": "FRAMEWORK WEB",
+      "PHP FRAMEWORK": "FRAMEWORK PHP",
+      "VERSION CONTROL": "KONTROL VERSI",
+      "UI/UX DESIGN": "DESAIN UI/UX",
+      "IMAGE EDITING": "EDIT GAMBAR",
+      "VECTOR ART": "SENI VEKTOR",
+      "COLOR GRADING": "GRADING WARNA",
+      "LAYOUT DESIGN": "DESAIN TATA LETAK",
+      "API TESTING": "PENGUJIAN API",
+      "VIDEO EDITING": "EDIT VIDEO",
+      "MOTION VFX": "EFEK VISUAL",
+      "MOBILE EDITING": "EDIT MOBILE",
+      "DATABASE": "BASIS DATA",
+      "STREAMING": "SIARAN LANGSUNG"
+    }
+  },
+  en: {
+    nav: [
+      { id: "beranda", label: "Home" },
+      { id: "tentang", label: "About" },
+      { id: "proyek", label: "Projects" },
+      { id: "kontak", label: "Contact" }
+    ],
+    hero: {
+      greeting: "HELLO, I AM",
+      role: "A",
+      desc: "I help businesses and individuals transform ideas into beautiful and functional digital solutions.",
+      btnProject: "View Projects ↗",
+      btnContact: "Contact Me →"
+    },
+    about: {
+      title1: "About",
+      title2: "Me",
+      quote: "A blend of code logic and design aesthetics.",
+      p1: "I am an Informatics Engineering student at Politeknik Caltex Riau, specializing as a Web Developer (FrontEnd) and UI/UX Designer.",
+      p2: "Experienced in developing web-based projects using CodeIgniter, Laravel, and ReactJS. Skilled in problem analysis, data management, and effective communication within teams and clients.",
+      stats: [
+        ["3+", "Years Exp"],
+        ["8+", "Projects Done"],
+        ["2+", "Awards"]
+      ],
+      btnCv: "Download CV ⬇"
+    },
+    experience: {
+      title1: "My",
+      title2: "Journey",
+      eduTitle: "Education & Internship",
+      edu1Date: "Aug 2022 - Present",
+      edu1Title: "D4 Informatics Engineering",
+      edu1Desc: "Active member of ITSA, participating in various student organization and campus events.",
+      edu2Date: "Sep 2025 - Jul 2026",
+      edu2Title: "MSDI Division, IT (Intern)",
+      edu2_1: "Developed Key Performance Indicator System",
+      edu2_2: "Developed Work Load Analysis System",
+      edu3Date: "Aug 2019 - Apr 2022",
+      edu3Title: "Science & Math",
+      edu3Desc: "Active Scout member and participated in various academic and non-academic competitions.",
+      orgTitle: "Organizations & Awards",
+      org1Date: "2022 - Present",
+      org1Title: "Awards & Achievements",
+      org1Desc: "Politeknik Caltex Riau & Local Gov",
+      org1_1: "Rokan Hilir Government Scholarship Awardee 2022 - 2026",
+      org1_2: "Awarded BEST POSTER – JTI EXPO 2024",
+      org2Date: "Aug 2022 - Sep 2025",
+      org2Title: "Organization Board",
+      org2Desc: "PCR-ROHIL Student Family & ITSA",
+      org2_1: "Secretary of Communication & Info Div (2024-2025)",
+      org2_2: "Member of Documentation Div for Design Class Event",
+      org2_3: "Active member of Informatics Engineering Student Assoc (ITSA)",
+      org3Date: "Sep 2022 - 2024",
+      org3Title: "Campus Level Committees",
+      org3Desc: "Campus Level Committees",
+      org3_1: "Head of Publication Div for Upgrading Skill Competition",
+      org3_2: "Committee of PCR-GTS 2023 & 2024",
+      org3_3: "Committee for PCR Graduate Career Briefing 2023 & 2024"
+    },
+    certs: {
+      title1: "Certificates",
+      title2: "& Awards",
+      subtitle: "Some of my achievements and competency validations.",
+      fallback: "PDF Certificate",
+      btnPdf: "View PDF ↗",
+      empty: "No certificates found in Asset/Sertifikat folder.",
+      btnLess: "Show Less ↑",
+      btnMore: "View All Certificates ↓",
+      descPrefix: "Certificate of achievement and competency for"
+    },
+    projects: {
+      title1: "Selected",
+      title2: "Projects",
+      subtitle: "Some works that highlight my expertise.",
+      fallback: "Project Mockup",
+      btnDetail: "View Details ↗",
+      emptyTitle: "No Projects added yet.",
+      emptyDesc: "Create a folder inside Asset/Project/ and add a Mockup.jpg file along with other images.",
+      btnLess: "Show Less ↑",
+      btnMore: "View All Projects ↓",
+      desc1: "This is a brief explanation about the",
+      desc2: "This project was developed focusing on modern interfaces and providing interactive user experience solutions.",
+      modalNoImg: "No detail images for this project.",
+      modalAddImg: "Add other images inside your project folder."
+    },
+    contact: {
+      title1: "Let's",
+      title2: "Collaborate",
+      subtitle: "Have a project idea? I'm ready to help turn it into a digital reality.",
+      btnEmail: "Send Email ✉",
+      btnWa: "WhatsApp →"
+    },
+    idcard: {
+      role: "UI/UX · Web Dev",
+      freelance: "Open Freelance",
+      drag: "drag me ↕"
+    },
+    profileCard: {
+      role: "Software Engineer",
+      contact: "Contact Me",
+      online: "Online"
+    },
+    techCat: {
+      "FRONTEND LIB": "FRONTEND LIB",
+      "CSS FRAMEWORK": "CSS FRAMEWORK",
+      "BACKEND SERVICE": "BACKEND SERVICE",
+      "WEB FRAMEWORK": "WEB FRAMEWORK",
+      "PHP FRAMEWORK": "PHP FRAMEWORK",
+      "VERSION CONTROL": "VERSION CONTROL",
+      "UI/UX DESIGN": "UI/UX DESIGN",
+      "IMAGE EDITING": "IMAGE EDITING",
+      "VECTOR ART": "VECTOR ART",
+      "COLOR GRADING": "COLOR GRADING",
+      "LAYOUT DESIGN": "LAYOUT DESIGN",
+      "API TESTING": "API TESTING",
+      "VIDEO EDITING": "VIDEO EDITING",
+      "MOTION VFX": "MOTION VFX",
+      "MOBILE EDITING": "MOBILE EDITING",
+      "DATABASE": "DATABASE",
+      "STREAMING": "STREAMING"
+    }
+  }
+};
+
 /* ═══════════════════════════════════════════════════════════════════
    MAIN PORTFOLIO
 ═══════════════════════════════════════════════════════════════════ */
@@ -594,9 +842,25 @@ export default function Portfolio() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [showAllCerts, setShowAllCerts] = useState(false);
   const [showAllProjects, setShowAllProjects] = useState(false);
+  const [lang, setLang] = useState("id");
 
+  const t = translations[lang];
   const visibleCerts = showAllCerts ? certificates : certificates.slice(0, 6);
   const visibleProjects = showAllProjects ? allProjects : allProjects.slice(0, 4);
+
+  const taglinesID = [
+    "UI/UX Designer & Web Developer",
+    "Mengubah Ide Menjadi Realitas Digital",
+    "Merancang Kode & Desain yang Indah",
+    "Membangun Web Masa Depan Hari Ini",
+  ];
+  const taglinesEN = [
+    "UI/UX Designer & Web Developer",
+    "Turning Ideas into Digital Reality",
+    "Crafting Beautiful Code & Design",
+    "Building Tomorrow's Web Today",
+  ];
+  const taglines = lang === "id" ? taglinesID : taglinesEN;
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -637,13 +901,6 @@ export default function Portfolio() {
     }
     return () => { document.body.style.overflow = "auto"; };
   }, [selectedProject]);
-
-  const taglines = [
-    "UI/UX Designer & Web Developer",
-    "Turning Ideas into Digital Reality",
-    "Crafting Beautiful Code & Design",
-    "Building Tomorrow's Web Today",
-  ];
 
   return (
     <>
@@ -760,21 +1017,30 @@ export default function Portfolio() {
           </div>
           {!isMobile && (
             <div style={{ display: "flex", gap: 38, alignItems: "center" }}>
-              {["Beranda", "Tentang", "Proyek", "Kontak"].map((item) => (
+              {t.nav.map((item) => (
                 <a
-                  key={item}
-                  href={`#${item.toLowerCase()}`}
-                  className={`nav-link ${activeSection === item.toLowerCase() ? "active" : ""}`}
-                  onClick={() => setActiveSection(item.toLowerCase())}
+                  key={item.id}
+                  href={`#${item.id}`}
+                  className={`nav-link ${activeSection === item.id ? "active" : ""}`}
+                  onClick={() => setActiveSection(item.id)}
                 >
-                  {item}
+                  {item.label}
                 </a>
               ))}
               <div style={{ width: 1, height: 18, background: "rgba(255,255,255,.12)" }} />
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ fontSize: 13, color: "rgba(255,255,255,.35)" }}>🌐</span>
-                <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: "rgba(255,255,255,.35)" }}>ID</span>
-              </div>
+              <button 
+                onClick={() => setLang(lang === "id" ? "en" : "id")}
+                style={{ display: "flex", alignItems: "center", gap: 6, background: "transparent", border: "none", cursor: "pointer", outline: "none", padding: 0 }}
+              >
+                {lang === "id" ? (
+                  <img src="https://flagcdn.com/w20/gb.png" alt="English" style={{ width: 16, borderRadius: 2 }} />
+                ) : (
+                  <img src="https://flagcdn.com/w20/id.png" alt="Indonesia" style={{ width: 16, borderRadius: 2 }} />
+                )}
+                <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 13, color: "#00c896", fontWeight: "bold" }}>
+                  {lang === "id" ? "EN" : "ID"}
+                </span>
+              </button>
             </div>
           )}
           {isMobile && (
@@ -805,20 +1071,34 @@ export default function Portfolio() {
               opacity: isMobileMenuOpen ? 1 : 0,
               transition: "all 0.3s ease-in-out",
             }}>
-              {["Beranda", "Tentang", "Proyek", "Kontak"].map((item) => (
+              {t.nav.map((item) => (
                 <a
-                  key={item}
-                  href={`#${item.toLowerCase()}`}
-                  className={`nav-link ${activeSection === item.toLowerCase() ? "active" : ""}`}
+                  key={item.id}
+                  href={`#${item.id}`}
+                  className={`nav-link ${activeSection === item.id ? "active" : ""}`}
                   style={{ textDecoration: "none", fontSize: 15, fontFamily: "'DM Sans',sans-serif", fontWeight: 500 }}
                   onClick={() => {
-                    setActiveSection(item.toLowerCase());
+                    setActiveSection(item.id);
                     setIsMobileMenuOpen(false);
                   }}
                 >
-                  {item}
+                  {item.label}
                 </a>
               ))}
+              <div style={{ height: 1, background: "rgba(255,255,255,.05)", margin: "4px 0" }} />
+              <button 
+                onClick={() => { setLang(lang === "id" ? "en" : "id"); setIsMobileMenuOpen(false); }}
+                style={{ display: "flex", alignItems: "center", gap: 12, background: "transparent", border: "none", cursor: "pointer", color: "#fff", padding: 0 }}
+              >
+                {lang === "id" ? (
+                  <img src="https://flagcdn.com/w20/gb.png" alt="English" style={{ width: 20, borderRadius: 2 }} />
+                ) : (
+                  <img src="https://flagcdn.com/w20/id.png" alt="Indonesia" style={{ width: 20, borderRadius: 2 }} />
+                )}
+                <span style={{ fontFamily: "'DM Sans',sans-serif", fontSize: 15, fontWeight: 500 }}>
+                  {lang === "id" ? "Switch to English (EN)" : "Ubah ke Indonesia (ID)"}
+                </span>
+              </button>
             </div>
           )}
         </nav>
@@ -839,8 +1119,8 @@ export default function Portfolio() {
             <div style={{
               fontSize: isMobile ? 11 : 12, letterSpacing: 3,
               color: "rgba(255,255,255,.3)", marginBottom: 20,
-              textTransform: "uppercase", fontFamily: "'Space Mono',monospace"
-            }}>HALO, SAYA</div>
+            textTransform: "uppercase", fontFamily: "'Space Mono',monospace"
+          }}>{t.hero.greeting}</div>
 
             <h1 style={{
               fontFamily: "'DM Sans',sans-serif", fontWeight: 800,
@@ -851,7 +1131,7 @@ export default function Portfolio() {
             </h1>
 
             <div style={{ marginBottom: 6 }}>
-              <span style={{ fontSize: isMobile ? 14 : 17, color: "rgba(255,255,255,.45)", fontFamily: "'DM Sans',sans-serif", fontWeight: 300 }}>Seorang</span>
+            <span style={{ fontSize: isMobile ? 14 : 17, color: "rgba(255,255,255,.45)", fontFamily: "'DM Sans',sans-serif", fontWeight: 300 }}>{t.hero.role}</span>
             </div>
             <div style={{ marginBottom: 30 }}>
               <span style={{
@@ -876,12 +1156,12 @@ export default function Portfolio() {
               maxWidth: 440, marginBottom: 38,
               fontSize: isMobile ? 14 : 15, fontWeight: 300
             }}>
-              Saya membantu bisnis dan individu mengubah ide menjadi solusi digital yang indah dan berfungsi.
+            {t.hero.desc}
             </p>
 
             <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-              <a href="#proyek" className="btn-primary">Lihat Proyek ↗</a>
-              <a href="#kontak" className="btn-outline">Kontak Saya →</a>
+            <a href="#proyek" className="btn-primary">{t.hero.btnProject}</a>
+            <a href="#kontak" className="btn-outline">{t.hero.btnContact}</a>
             </div>
           </div>
 
@@ -893,7 +1173,7 @@ export default function Portfolio() {
             animation: "float 6s ease-in-out infinite",
             width: isMobile ? "100%" : "auto",
           }}>
-            <ProfileCard isMobile={isMobile} profileImage={profileImg1} />
+          <ProfileCard isMobile={isMobile} profileImage={profileImg1} t={t.profileCard} />
           </div>
         </section>
 
@@ -917,7 +1197,7 @@ export default function Portfolio() {
               order: isMobile ? 2 : 1,
               flexShrink: 0,
             }}>
-              <IDCard isMobile={isMobile} profileImage={profileImg2} />
+            <IDCard isMobile={isMobile} profileImage={profileImg2} t={t.idcard} />
             </div>
 
             {/* Text */}
@@ -928,7 +1208,7 @@ export default function Portfolio() {
                   fontSize: isMobile ? 38 : 56, lineHeight: 1.0,
                   color: "#fff", marginBottom: 20, letterSpacing: -1
                 }}>
-                  Tentang <span style={{ color: "#22c55e" }}>Saya</span>
+                {t.about.title1} <span style={{ color: "#22c55e" }}>{t.about.title2}</span>
                 </h2>
               </div>
               <div className="reveal reveal-delay-1" style={{
@@ -937,18 +1217,18 @@ export default function Portfolio() {
                 fontStyle: "italic", color: "rgba(255,255,255,.5)",
                 fontSize: isMobile ? 14 : 15, lineHeight: 1.75,
               }}>
-                Perpaduan logika kode dan estetika desain.
+              {t.about.quote}
               </div>
               <div className="reveal reveal-delay-2" style={{ color: "rgba(255,255,255,.55)", lineHeight: 1.9, fontSize: isMobile ? 14 : 15, marginBottom: 16, fontWeight: 300 }}>
-                Saya merupakan seorang mahasiswa Teknik Informatika Politeknik Caltex Riau dengan bidang Web Developer (FrontEnd) dan UI/UX Designer.
+              {t.about.p1}
               </div>
               <div className="reveal reveal-delay-2" style={{ color: "rgba(255,255,255,.55)", lineHeight: 1.9, fontSize: isMobile ? 14 : 15, marginBottom: 38, fontWeight: 300 }}>
-                Memiliki pengalaman dalam pengembangan project berbasis website seperti CodeIgniter, Laravel, dan ReactJS. Saya terampil dalam analisis masalah, manajemen data, serta komunikasi efektif dalam tim dan klien.
+              {t.about.p2}
               </div>
 
               {/* Stats */}
               <div className="reveal reveal-delay-3" style={{ display: "flex", gap: isMobile ? 30 : 52, marginBottom: 40, flexWrap: "wrap" }}>
-                {[["3+", "Tahun Pengalaman"], ["8+", "Proyek Selesai"], ["2+", "Penghargaan"]].map(([n, l]) => (
+              {t.about.stats.map(([n, l]) => (
                   <div key={l}>
                     <div style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: isMobile ? 44 : 64, color: "#22c55e", lineHeight: 1 }}>{n}</div>
                     <div style={{ fontSize: isMobile ? 9 : 10, letterSpacing: 2, textTransform: "uppercase", color: "rgba(255,255,255,.3)", marginTop: 4, fontFamily: "'Space Mono',monospace" }}>{l}</div>
@@ -958,7 +1238,7 @@ export default function Portfolio() {
 
               <div className="reveal reveal-delay-4">
                 <a href={cvFile} download="CV_Alfi_Fikri_Putra_Saldan.pdf" className="btn-primary" style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-                  Unduh CV <span style={{ fontSize: 14 }}>⬇</span>
+                {t.about.btnCv}
                 </a>
               </div>
             </div>
@@ -970,7 +1250,7 @@ export default function Portfolio() {
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
             <div className="reveal" style={{ textAlign: "center", marginBottom: isMobile ? 40 : 56 }}>
               <h2 style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: isMobile ? 32 : 50, color: "#fff", letterSpacing: -0.5 }}>
-                Jejak <span style={{ color: "#00c896" }}>Perjalanan</span>
+              {t.experience.title1} <span style={{ color: "#00c896" }}>{t.experience.title2}</span>
               </h2>
             </div>
             
@@ -978,34 +1258,37 @@ export default function Portfolio() {
               {/* Kolom Kiri: Pendidikan & Magang */}
               <div className="reveal reveal-delay-1">
                 <h3 style={{ color: "#fff", fontSize: isMobile ? 20 : 22, marginBottom: 28, display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ color: "#00c896" }}>🎓</span> Pendidikan & Magang
+                  <svg width={isMobile ? 22 : 24} height={isMobile ? 22 : 24} viewBox="0 0 24 24" fill="none" stroke="#00c896" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                  </svg>
+                  {t.experience.eduTitle}
                 </h3>
                 <div className="timeline-container">
                   <div className="timeline-card">
                     <div className="timeline-dot" />
-                    <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>Ags 2022 - Sekarang</div>
-                    <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>D4 Teknik Informatika</div>
+                  <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>{t.experience.edu1Date}</div>
+                  <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.experience.edu1Title}</div>
                     <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>Politeknik Caltex Riau</div>
-                    <div style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.6 }}>Aktif sebagai anggota ITSA dan mengikuti kegiatan baik tingkat organisasi mahasiswa maupun kampus.</div>
+                  <div style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.6 }}>{t.experience.edu1Desc}</div>
                   </div>
 
                   <div className="timeline-card">
                     <div className="timeline-dot" />
-                    <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>Sep 2025 - Jul 2026</div>
-                    <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>Divisi MSDI, IT (Magang)</div>
+                  <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>{t.experience.edu2Date}</div>
+                  <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.experience.edu2Title}</div>
                     <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>PT. Bank Riau Kepri Syariah</div>
                     <ul style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.6, paddingLeft: 18, margin: 0 }}>
-                      <li style={{ marginBottom: 4 }}>Mengembangkan Sistem Key Performance Indicator</li>
-                      <li>Mengembangkan Sistem Work Load Analysis</li>
+                    <li style={{ marginBottom: 4 }}>{t.experience.edu2_1}</li>
+                    <li>{t.experience.edu2_2}</li>
                     </ul>
                   </div>
 
                   <div className="timeline-card">
                     <div className="timeline-dot" />
-                    <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>Ags 2019 - Apr 2022</div>
-                    <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>MIPA</div>
+                  <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>{t.experience.edu3Date}</div>
+                  <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.experience.edu3Title}</div>
                     <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>SMAN 1 Tanah Putih Tanjung Melawan</div>
-                    <div style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.6 }}>Aktif sebagai anggota Pramuka dan mengikuti perlombaan di bidang akademik maupun non-akademik.</div>
+                  <div style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.6 }}>{t.experience.edu3Desc}</div>
                   </div>
                 </div>
               </div>
@@ -1013,41 +1296,44 @@ export default function Portfolio() {
               {/* Kolom Kanan: Organisasi & Penghargaan */}
               <div className="reveal reveal-delay-2">
                 <h3 style={{ color: "#fff", fontSize: isMobile ? 20 : 22, marginBottom: 28, display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ color: "#00c896" }}>💼</span> Organisasi & Penghargaan
+                  <svg width={isMobile ? 22 : 24} height={isMobile ? 22 : 24} viewBox="0 0 24 24" fill="none" stroke="#00c896" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                  </svg>
+                  {t.experience.orgTitle}
                 </h3>
                 <div className="timeline-container">
                   <div className="timeline-card">
                     <div className="timeline-dot" />
-                    <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>2022 - Sekarang</div>
-                    <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>Penghargaan & Pencapaian</div>
-                    <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>Politeknik Caltex Riau & Pemkab</div>
+                  <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>{t.experience.org1Date}</div>
+                  <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.experience.org1Title}</div>
+                  <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>{t.experience.org1Desc}</div>
                     <ul style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.6, paddingLeft: 18, margin: 0 }}>
-                      <li style={{ marginBottom: 4 }}>Penerima Beasiswa Pemerintah Kab. Rokan Hilir 2022 - 2026</li>
-                      <li>Meraih Penghargaan Sebagai BEST POSTER – JTI EXPO 2024</li>
+                    <li style={{ marginBottom: 4 }}>{t.experience.org1_1}</li>
+                    <li>{t.experience.org1_2}</li>
                     </ul>
                   </div>
 
                   <div className="timeline-card">
                     <div className="timeline-dot" />
-                    <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>Ags 2022 - Sep 2025</div>
-                    <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>Pengurus Organisasi</div>
-                    <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>Keluarga Mahasiswa PCR-ROHIL & ITSA</div>
+                  <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>{t.experience.org2Date}</div>
+                  <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.experience.org2Title}</div>
+                  <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>{t.experience.org2Desc}</div>
                     <ul style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.6, paddingLeft: 18, margin: 0 }}>
-                      <li style={{ marginBottom: 4 }}>Sekretaris Divisi Kominfo (2024-2025)</li>
-                      <li style={{ marginBottom: 4 }}>Anggota Divisi Dokumentasi Event Kelas Desain</li>
-                      <li>Anggota aktif Himpunan Mahasiswa Teknik Informatika (ITSA)</li>
+                    <li style={{ marginBottom: 4 }}>{t.experience.org2_1}</li>
+                    <li style={{ marginBottom: 4 }}>{t.experience.org2_2}</li>
+                    <li>{t.experience.org2_3}</li>
                     </ul>
                   </div>
 
                   <div className="timeline-card">
                     <div className="timeline-dot" />
-                    <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>Sep 2022 - 2024</div>
-                    <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>Campus Level Activities</div>
-                    <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>Kepanitiaan Tingkat Kampus</div>
+                  <div style={{ fontSize: 12, color: "#00c896", marginBottom: 8, fontFamily: "'Space Mono', monospace", letterSpacing: 0.5 }}>{t.experience.org3Date}</div>
+                  <div style={{ fontWeight: 700, fontSize: 18, color: "#fff", marginBottom: 4 }}>{t.experience.org3Title}</div>
+                  <div style={{ fontSize: 14, color: "rgba(255,255,255,0.7)", marginBottom: 12 }}>{t.experience.org3Desc}</div>
                     <ul style={{ fontSize: 14, color: "rgba(255,255,255,0.45)", lineHeight: 1.6, paddingLeft: 18, margin: 0 }}>
-                      <li style={{ marginBottom: 4 }}>Ketua Div. Publikasi Event Upgrading Skill Competition</li>
-                      <li style={{ marginBottom: 4 }}>Panitia PCR-GTS 2023 & 2024</li>
-                      <li>Panitia Pembekalan Karir Calon Wisudawan PCR 2023 & 2024</li>
+                    <li style={{ marginBottom: 4 }}>{t.experience.org3_1}</li>
+                    <li style={{ marginBottom: 4 }}>{t.experience.org3_2}</li>
+                    <li>{t.experience.org3_3}</li>
                     </ul>
                   </div>
                 </div>
@@ -1061,9 +1347,9 @@ export default function Portfolio() {
           <div style={{ maxWidth: 1200, margin: "0 auto" }}>
             <div className="reveal" style={{ textAlign: "center", marginBottom: isMobile ? 40 : 56 }}>
               <h2 style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: isMobile ? 32 : 50, color: "#fff", letterSpacing: -0.5 }}>
-                Sertifikat <span style={{ color: "#00c896" }}>& Penghargaan</span>
+                {t.certs.title1} <span style={{ color: "#00c896" }}>{t.certs.title2}</span>
               </h2>
-              <p style={{ color: "rgba(255,255,255,.35)", marginTop: 10, fontSize: 15, fontWeight: 300 }}>Beberapa pencapaian dan validasi kompetensi saya.</p>
+              <p style={{ color: "rgba(255,255,255,.35)", marginTop: 10, fontSize: 15, fontWeight: 300 }}>{t.certs.subtitle}</p>
             </div>
 
             <div style={{
@@ -1081,27 +1367,27 @@ export default function Portfolio() {
                       /* Fallback jika gambar thumbnail belum ada */
                       <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.2)", background: "#1a1a24" }}>
                         <span style={{ fontSize: 48, marginBottom: 8 }}>📄</span>
-                        <span style={{ fontSize: 12, fontFamily: "'Space Mono', monospace" }}>Sertifikat PDF</span>
+                        <span style={{ fontSize: 12, fontFamily: "'Space Mono', monospace" }}>{t.certs.fallback}</span>
                       </div>
                     )}
                     <div className="cert-overlay">
-                      <span className="cert-view-btn">Lihat PDF ↗</span>
+                      <span className="cert-view-btn">{t.certs.btnPdf}</span>
                     </div>
                   </div>
                   <div className="cert-info">
                     <h3 className="cert-title">{cert.title}</h3>
-                    <p className="cert-desc">{cert.desc}</p>
+                    <p className="cert-desc">{t.certs.descPrefix} {cert.title}.</p>
                   </div>
                 </a>
               )) : (
-                <p style={{ color: "rgba(255,255,255,.4)", textAlign: "center", gridColumn: "1 / -1", fontSize: 14 }}>Belum ada sertifikat di dalam folder Asset/Sertifikat.</p>
+                <p style={{ color: "rgba(255,255,255,.4)", textAlign: "center", gridColumn: "1 / -1", fontSize: 14 }}>{t.certs.empty}</p>
               )}
             </div>
 
             {certificates.length > 3 && (
               <div className="reveal" style={{ textAlign: "center", marginTop: 40 }}>
                 <button onClick={() => setShowAllCerts(!showAllCerts)} className="btn-outline">
-                  {showAllCerts ? "Tampilkan Lebih Sedikit ↑" : "Lihat Semua Sertifikat ↓"}
+                  {showAllCerts ? t.certs.btnLess : t.certs.btnMore}
                 </button>
               </div>
             )}
@@ -1113,9 +1399,9 @@ export default function Portfolio() {
           <div style={{ maxWidth: 1200, margin: "0 auto", padding: isMobile ? "0 24px" : "0 64px" }}>
             <div className="reveal" style={{ textAlign: "center", marginBottom: isMobile ? 40 : 56 }}>
               <h2 style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: isMobile ? 32 : 50, color: "#fff", letterSpacing: -0.5 }}>
-                Proyek <span style={{ color: "#00c896" }}>Terpilih</span>
+                {t.projects.title1} <span style={{ color: "#00c896" }}>{t.projects.title2}</span>
               </h2>
-              <p style={{ color: "rgba(255,255,255,.35)", marginTop: 10, fontSize: 15, fontWeight: 300 }}>Beberapa karya yang menyoroti keahlian saya.</p>
+              <p style={{ color: "rgba(255,255,255,.35)", marginTop: 10, fontSize: 15, fontWeight: 300 }}>{t.projects.subtitle}</p>
             </div>
 
             <div style={{
@@ -1131,23 +1417,23 @@ export default function Portfolio() {
                     ) : (
                       <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.2)" }}>
                         <span style={{ fontSize: 48, marginBottom: 8 }}>🖼️</span>
-                        <span style={{ fontSize: 12, fontFamily: "'Space Mono', monospace" }}>Mockup Project</span>
+                        <span style={{ fontSize: 12, fontFamily: "'Space Mono', monospace" }}>{t.projects.fallback}</span>
                       </div>
                     )}
                     <div className="project-overlay">
-                      <span className="project-view-btn">Lihat Detail ↗</span>
+                      <span className="project-view-btn">{t.projects.btnDetail}</span>
                     </div>
                   </div>
                   <div className="project-info">
                     <h3 className="project-title">{p.title}</h3>
-                    <p className="project-desc">{p.desc}</p>
+                    <p className="project-desc">{t.projects.desc1} {p.title}. {t.projects.desc2}</p>
                   </div>
                 </div>
               )) : (
                 <div style={{ gridColumn: "1 / -1", padding: 40, textAlign: "center", color: "rgba(255,255,255,0.4)", background: "rgba(255,255,255,0.02)", borderRadius: 16, border: "1px dashed rgba(255,255,255,0.1)" }}>
                   <div style={{ fontSize: 40, marginBottom: 16 }}>📁</div>
-                  Belum ada Proyek yang ditambahkan.<br/>
-                  <span style={{ fontSize: 13, opacity: 0.6 }}>Buat folder di dalam <code>Asset/Project/</code> dan tambahkan file gambar <code>Mockup.jpg</code> beserta gambar lainnya.</span>
+                  {t.projects.emptyTitle}<br/>
+                  <span style={{ fontSize: 13, opacity: 0.6 }}>{t.projects.emptyDesc}</span>
                 </div>
               )}
             </div>
@@ -1155,7 +1441,7 @@ export default function Portfolio() {
             {allProjects.length > 4 && (
               <div className="reveal" style={{ textAlign: "center", marginTop: 40 }}>
                 <button onClick={() => setShowAllProjects(!showAllProjects)} className="btn-outline">
-                  {showAllProjects ? "Tampilkan Lebih Sedikit ↑" : "Lihat Semua Proyek ↓"}
+                  {showAllProjects ? t.projects.btnLess : t.projects.btnMore}
                 </button>
               </div>
             )}
@@ -1186,7 +1472,8 @@ export default function Portfolio() {
                     </div>
                     <div>
                       <div style={{ color: "#fff", fontFamily: "'DM Sans',sans-serif", fontWeight: 600, fontSize: isMobile ? 11 : 13, textAlign: "center" }}>{tech.name}</div>
-                      <div style={{ color: "rgba(255,255,255,.28)", fontSize: isMobile ? 7 : 9, letterSpacing: 1, fontFamily: "'Space Mono',monospace", textTransform: "uppercase", textAlign: "center", marginTop: 2 }}>{tech.category}</div>
+                      <div style={{ color: "rgba(255,255,255,.28)", fontSize: isMobile ? 7 : 9, letterSpacing: 1, fontFamily: "'Space Mono',monospace", textTransform: "uppercase", textAlign: "center", marginTop: 2 }}>{t.techCat[tech.category] || tech.category}</div>
+                      <div style={{ color: "rgba(255,255,255,.28)", fontSize: isMobile ? 7 : 9, letterSpacing: 1, fontFamily: "'Space Mono',monospace", textTransform: "uppercase", textAlign: "center", marginTop: 2 }}>{t.techCat[tech.category] || tech.category}</div>
                     </div>
                   </div>
                 ))}
@@ -1221,15 +1508,15 @@ export default function Portfolio() {
             <div className="reveal">
               <div style={{ fontFamily: "'Space Mono',monospace", fontSize: 10, letterSpacing: 3, textTransform: "uppercase", color: "rgba(255,255,255,.25)", marginBottom: 14, display: "flex", justifyContent: "center" }}></div>
               <h2 style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: isMobile ? 38 : 58, color: "#fff", marginBottom: 16, letterSpacing: -1.5, lineHeight: 1 }}>
-                Mari <span style={{ color: "#00c896" }}>Berkolaborasi</span>
+                {t.contact.title1} <span style={{ color: "#00c896" }}>{t.contact.title2}</span>
               </h2>
               <p style={{ color: "rgba(255,255,255,.38)", lineHeight: 1.85, fontSize: isMobile ? 14 : 15, marginBottom: 40, fontWeight: 300 }}>
-                Punya ide proyek? Saya siap membantu mengubahnya menjadi kenyataan digital.
+                {t.contact.subtitle}
               </p>
             </div>
             <div className="reveal reveal-delay-1" style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-              <a href="mailto:saldanputra46@gmail.com" className="btn-primary">Kirim Email ✉</a>
-              <a href="#" className="btn-outline">WhatsApp →</a>
+              <a href="mailto:saldanputra46@gmail.com" className="btn-primary">{t.contact.btnEmail}</a>
+              <a href="#" className="btn-outline">{t.contact.btnWa}</a>
             </div>
             <div className="reveal reveal-delay-2" style={{ display: "flex", gap: 26, justifyContent: "center", marginTop: 42, flexWrap: "wrap" }}>
               {["⊕ GitHub", "in LinkedIn", "◉ Instagram", "♪ TikTok"].map(s => (
@@ -1264,7 +1551,9 @@ export default function Portfolio() {
               <button onClick={() => setSelectedProject(null)} style={{ background: "rgba(255,255,255,0.1)", border: "none", color: "#fff", width: 36, height: 36, borderRadius: "50%", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "background 0.2s" }} onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.2)"} onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.1)"}>✕</button>
             </div>
             <div className="modal-body">
-              <p style={{ color: "rgba(255,255,255,0.7)", fontSize: isMobile ? 14 : 16, lineHeight: 1.7, marginBottom: 32, fontWeight: 300 }}>{selectedProject.desc}</p>
+              <p style={{ color: "rgba(255,255,255,0.7)", fontSize: isMobile ? 14 : 16, lineHeight: 1.7, marginBottom: 32, fontWeight: 300 }}>
+                {t.projects.desc1} {selectedProject.title}. {t.projects.desc2}
+              </p>
               
               <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
                 {selectedProject.images && selectedProject.images.length > 0 ? (
@@ -1274,7 +1563,7 @@ export default function Portfolio() {
                 ) : (
                   <div style={{ padding: "60px 20px", textAlign: "center", color: "rgba(255,255,255,0.3)", background: "rgba(255,255,255,0.02)", borderRadius: 12, border: "1px dashed rgba(255,255,255,0.05)" }}>
                     <span style={{ fontSize: 32, display: "block", marginBottom: 12 }}>🖼️</span>
-                    Belum ada gambar detail untuk proyek ini.<br />Tambahkan gambar lain di dalam folder proyek Anda.
+                    {t.projects.modalNoImg}<br />{t.projects.modalAddImg}
                   </div>
                 )}
               </div>
