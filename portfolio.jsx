@@ -3,6 +3,26 @@ import profileImg1 from "./Asset/Img/Profil2.JPEG";
 import profileImg2 from "./Asset/Img/profil.png";
 import cvFile from "./Asset/CV/Cv Alfi Fikri Putra Saldan.pdf";
 
+const SunIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="5"></circle>
+    <line x1="12" y1="1" x2="12" y2="3"></line>
+    <line x1="12" y1="21" x2="12" y2="23"></line>
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+    <line x1="1" y1="12" x2="3" y2="12"></line>
+    <line x1="21" y1="12" x2="23" y2="12"></line>
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+  </svg>
+);
+
+const MoonIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+  </svg>
+);
+
 /* ─── TYPING ANIMATION ──────────────────────────────────────────────── */
 const TypingText = ({ phrases, speed = 100, delay = 2000 }) => {
   const [displayText, setDisplayText] = useState("");
@@ -581,6 +601,46 @@ Object.keys(projFiles).forEach((path) => {
 
 const allProjects = Object.values(projectsMap).filter(p => p.mockup);
 
+/* ─── SOCIAL LINKS ────────────────────────────────────────────────── */
+const socialLinks = [
+  {
+    name: "GitHub",
+    url: "https://github.com/alfsaldan",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+      </svg>
+    )
+  },
+  {
+    name: "LinkedIn",
+    url: "https://id.linkedin.com/in/alfi-fikri-putra-saldan-516a00323",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle>
+      </svg>
+    )
+  },
+  {
+    name: "Instagram",
+    url: "https://www.instagram.com/alf_saldan/",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+      </svg>
+    )
+  },
+  {
+    name: "TikTok",
+    url: "https://www.tiktok.com/@ezzygyy",
+    icon: (
+      <svg width="18" height="18" viewBox="-2 -2 28 28" fill="currentColor" stroke="none">
+        <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 2.25-.71 4.46-2.02 6.13-1.63 2.11-4.22 3.32-6.93 3.35-2.61.03-5.26-.8-7.16-2.58-1.89-1.78-2.96-4.32-2.91-6.92.05-2.61 1.25-5.08 3.2-6.75 1.95-1.67 4.59-2.45 7.15-2.18v4.06c-1.39-.24-2.84-.11-4.08.57-1.24.68-2.19 1.83-2.51 3.19-.32 1.36-.06 2.83.67 3.98.73 1.15 2.01 1.91 3.4 2.06 1.39.15 2.82-.16 3.96-.92 1.14-.76 1.87-1.99 2.03-3.34.09-.76.08-1.53.08-2.3V.02z"/>
+      </svg>
+    )
+  }
+];
+
 /* ─── KAMUS TERJEMAHAN ───────────────────────────────────────────── */
 const translations = {
   id: {
@@ -674,7 +734,12 @@ const translations = {
       title2: "Berkolaborasi",
       subtitle: "Punya ide proyek? Saya siap membantu mengubahnya menjadi kenyataan digital.",
       btnEmail: "Kirim Email ✉",
-      btnWa: "WhatsApp →"
+      btnWa: "WhatsApp →",
+      formName: "Nama Anda",
+      formEmail: "Email",
+      formSubject: "Subjek",
+      formMsg: "Pesan Anda...",
+      formSubmit: "Kirim via Email ↗"
     },
     idcard: {
       role: "UI/UX · Web Dev",
@@ -797,7 +862,12 @@ const translations = {
       title2: "Collaborate",
       subtitle: "Have a project idea? I'm ready to help turn it into a digital reality.",
       btnEmail: "Send Email ✉",
-      btnWa: "WhatsApp →"
+      btnWa: "WhatsApp →",
+      formName: "Your Name",
+      formEmail: "Email",
+      formSubject: "Subject",
+      formMsg: "Your Message...",
+      formSubmit: "Send via Email ↗"
     },
     idcard: {
       role: "UI/UX · Web Dev",
@@ -843,6 +913,15 @@ export default function Portfolio() {
   const [showAllCerts, setShowAllCerts] = useState(false);
   const [showAllProjects, setShowAllProjects] = useState(false);
   const [lang, setLang] = useState("id");
+
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("theme") || "dark";
+    }
+    return "dark";
+  });
+
+  const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
 
   const t = translations[lang];
   const visibleCerts = showAllCerts ? certificates : certificates.slice(0, 6);
@@ -901,6 +980,15 @@ export default function Portfolio() {
     }
     return () => { document.body.style.overflow = "auto"; };
   }, [selectedProject]);
+
+  useEffect(() => {
+    localStorage.setItem("theme", theme);
+    if (theme === "light") {
+      document.documentElement.classList.add("light-mode");
+    } else {
+      document.documentElement.classList.remove("light-mode");
+    }
+  }, [theme]);
 
   return (
     <>
@@ -993,6 +1081,15 @@ export default function Portfolio() {
         .cert-desc { color: rgba(255,255,255,.45); font-size: 13px; line-height: 1.5; font-weight: 300; }
 
         .typing-cursor{display:inline-block;width:2px;height:1em;background:#00c896;margin-left:3px;animation:blink .8s infinite;vertical-align:middle}
+
+        .contact-input { width: 100%; padding: 16px 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s, background 0.2s; }
+        .contact-input:focus { border-color: #00c896; background: rgba(255,255,255,0.05); }
+        .contact-input::placeholder { color: rgba(255,255,255,0.3); }
+
+        html.light-mode { filter: invert(1) hue-rotate(180deg); }
+        html.light-mode img:not(.no-invert),
+        html.light-mode video:not(.no-invert),
+        html.light-mode .revert-filter { filter: invert(1) hue-rotate(180deg); }
       `}</style>
 
       {/* Ambient bg */}
@@ -1029,6 +1126,12 @@ export default function Portfolio() {
               ))}
               <div style={{ width: 1, height: 18, background: "rgba(255,255,255,.12)" }} />
               <button 
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "transparent", border: "none", cursor: "pointer", outline: "none", padding: 0, color: "#fff" }}
+              >
+                {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+              </button>
+              <button 
                 onClick={() => setLang(lang === "id" ? "en" : "id")}
                 style={{ display: "flex", alignItems: "center", gap: 6, background: "transparent", border: "none", cursor: "pointer", outline: "none", padding: 0 }}
               >
@@ -1044,17 +1147,25 @@ export default function Portfolio() {
             </div>
           )}
           {isMobile && (
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              style={{
-                background: "transparent", border: "none", color: "#fff",
-                fontSize: 20, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                padding: "4px"
-              }}
-              aria-label="Toggle menu"
-            >
-              {isMobileMenuOpen ? "✕" : "☰"}
-            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <button 
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "transparent", border: "none", cursor: "pointer", outline: "none", padding: 0, color: "#fff" }}
+              >
+                {theme === "dark" ? <SunIcon /> : <MoonIcon />}
+              </button>
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                style={{
+                  background: "transparent", border: "none", color: "#fff",
+                  fontSize: 20, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                  padding: "4px"
+                }}
+                aria-label="Toggle menu"
+              >
+                {isMobileMenuOpen ? "✕" : "☰"}
+              </button>
+            </div>
           )}
 
           {/* ── MOBILE MENU OVERLAY ── */}
@@ -1146,8 +1257,10 @@ export default function Portfolio() {
 
             {/* Social */}
             <div style={{ display: "flex", gap: 10, marginBottom: 32 }}>
-              {["⊕", "in", "◉", "♪"].map(ic => (
-                <a key={ic} href="#" className="social-icon">{ic}</a>
+              {socialLinks.map(social => (
+                <a key={social.name} href={social.url} target="_blank" rel="noreferrer" className="social-icon" aria-label={social.name}>
+                  {social.icon}
+                </a>
               ))}
             </div>
 
@@ -1208,12 +1321,12 @@ export default function Portfolio() {
                   fontSize: isMobile ? 38 : 56, lineHeight: 1.0,
                   color: "#fff", marginBottom: 20, letterSpacing: -1
                 }}>
-                {t.about.title1} <span style={{ color: "#22c55e" }}>{t.about.title2}</span>
+                {t.about.title1} <span style={{ color: "#00c896" }}>{t.about.title2}</span>
                 </h2>
               </div>
               <div className="reveal reveal-delay-1" style={{
                 margin: "0 0 22px", paddingLeft: 14,
-                borderLeft: "2px solid rgba(99, 255, 102, 0.55)",
+                borderLeft: "2px solid rgba(0, 200, 150, 0.55)",
                 fontStyle: "italic", color: "rgba(255,255,255,.5)",
                 fontSize: isMobile ? 14 : 15, lineHeight: 1.75,
               }}>
@@ -1230,7 +1343,7 @@ export default function Portfolio() {
               <div className="reveal reveal-delay-3" style={{ display: "flex", gap: isMobile ? 30 : 52, marginBottom: 40, flexWrap: "wrap" }}>
               {t.about.stats.map(([n, l]) => (
                   <div key={l}>
-                    <div style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: isMobile ? 44 : 64, color: "#22c55e", lineHeight: 1 }}>{n}</div>
+                    <div style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: isMobile ? 44 : 64, color: "#00c896", lineHeight: 1 }}>{n}</div>
                     <div style={{ fontSize: isMobile ? 9 : 10, letterSpacing: 2, textTransform: "uppercase", color: "rgba(255,255,255,.3)", marginTop: 4, fontFamily: "'Space Mono',monospace" }}>{l}</div>
                   </div>
                 ))}
@@ -1468,7 +1581,7 @@ export default function Portfolio() {
                       background: "#1a1a1a",
                       display: "flex", alignItems: "center", justifyContent: "center"
                     }}>
-                      <img src={tech.img} alt={tech.name} style={{ width: 28, height: 28 }} onError={(e) => e.target.style.display = 'none'} />
+                      <img src={tech.img} alt={tech.name} className="no-invert" style={{ width: 28, height: 28 }} onError={(e) => e.target.style.display = 'none'} />
                     </div>
                     <div>
                       <div style={{ color: "#fff", fontFamily: "'DM Sans',sans-serif", fontWeight: 600, fontSize: isMobile ? 11 : 13, textAlign: "center" }}>{tech.name}</div>
@@ -1489,7 +1602,7 @@ export default function Portfolio() {
                       background: "#1a1a1a",
                       display: "flex", alignItems: "center", justifyContent: "center"
                     }}>
-                      <img src={tech.img} alt={tech.name} style={{ width: 28, height: 28 }} onError={(e) => e.target.style.display = 'none'} />
+                      <img src={tech.img} alt={tech.name} className="no-invert" style={{ width: 28, height: 28 }} onError={(e) => e.target.style.display = 'none'} />
                     </div>
                     <div>
                       <div style={{ color: "#fff", fontFamily: "'DM Sans',sans-serif", fontWeight: 600, fontSize: isMobile ? 11 : 13, textAlign: "center" }}>{tech.name}</div>
@@ -1515,14 +1628,35 @@ export default function Portfolio() {
               </p>
             </div>
             <div className="reveal reveal-delay-1" style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-              <a href="mailto:saldanputra46@gmail.com" className="btn-primary">{t.contact.btnEmail}</a>
-              <a href="#" className="btn-outline">{t.contact.btnWa}</a>
+              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=saldanputra46@gmail.com" target="_blank" rel="noreferrer" className="btn-primary">{t.contact.btnEmail}</a>
+              <a href="https://wa.me/6285361915205?text=Halo%20Saldan%20saya%20ingin%20bekerja%20sama" target="_blank" rel="noreferrer" className="btn-outline">{t.contact.btnWa}</a>
             </div>
-            <div className="reveal reveal-delay-2" style={{ display: "flex", gap: 26, justifyContent: "center", marginTop: 42, flexWrap: "wrap" }}>
-              {["⊕ GitHub", "in LinkedIn", "◉ Instagram", "♪ TikTok"].map(s => (
-                <a key={s} href="#" style={{ color: "rgba(255,255,255,.22)", fontSize: 11, fontFamily: "'Space Mono',monospace", textDecoration: "none", transition: "color .2s" }}
-                  onMouseEnter={e => e.target.style.color = "#00c896"}
-                  onMouseLeave={e => e.target.style.color = "rgba(255,255,255,.22)"}>{s}</a>
+
+            <div className="reveal reveal-delay-2" style={{ marginTop: 40, textAlign: "left" }}>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const bodyMsg = `Nama: ${formData.name}\nEmail: ${formData.email}\n\nPesan:\n${formData.message}`;
+                const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=saldanputra46@gmail.com&su=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(bodyMsg)}`;
+                window.open(gmailLink, '_blank');
+              }} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div style={{ display: "flex", gap: 16, flexDirection: isMobile ? "column" : "row" }}>
+                  <input required type="text" className="contact-input" placeholder={t.contact.formName} value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+                  <input required type="email" className="contact-input" placeholder={t.contact.formEmail} value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+                </div>
+                <input required type="text" className="contact-input" placeholder={t.contact.formSubject} value={formData.subject} onChange={e => setFormData({ ...formData, subject: e.target.value })} />
+                <textarea required rows={4} className="contact-input" style={{ resize: "vertical" }} placeholder={t.contact.formMsg} value={formData.message} onChange={e => setFormData({ ...formData, message: e.target.value })} />
+                <button type="submit" className="btn-primary" style={{ alignSelf: "center", marginTop: 8 }}>{t.contact.formSubmit}</button>
+              </form>
+            </div>
+
+            <div className="reveal reveal-delay-3" style={{ display: "flex", gap: 26, justifyContent: "center", marginTop: 42, flexWrap: "wrap" }}>
+              {socialLinks.map(social => (
+                <a key={social.name} href={social.url} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: 8, color: "rgba(255,255,255,.22)", fontSize: 11, fontFamily: "'Space Mono',monospace", textDecoration: "none", transition: "color .2s" }}
+                  onMouseEnter={e => e.currentTarget.style.color = "#00c896"}
+                  onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.22)"}>
+                  {social.icon}
+                  <span>{social.name}</span>
+                </a>
               ))}
             </div>
           </div>
@@ -1538,7 +1672,7 @@ export default function Portfolio() {
           <div style={{ fontFamily: "'DM Sans',sans-serif", fontWeight: 800, fontSize: isMobile ? 17 : 22, color: "rgba(255,255,255,.25)" }}>
             Saldan<span style={{ color: "#00c896" }}>.</span>
           </div>
-          <div style={{ fontFamily: "'Space Mono',monospace", fontSize: isMobile ? 9 : 10, color: "rgba(255,255,255,.15)" }}>© 2026 · Crafted with ♥</div>
+          <div style={{ fontFamily: "'Space Mono',monospace", fontSize: isMobile ? 9 : 10, color: "rgba(255,255,255,.15)" }}>© 2026 · Alfi Saldan</div>
         </footer>
       </div>
 
